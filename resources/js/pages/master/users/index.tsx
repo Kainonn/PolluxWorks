@@ -1,5 +1,23 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { Pencil, Plus, Search, Trash2, User as UserIcon } from 'lucide-react';
+import {
+    Eye,
+    Filter,
+    MoreHorizontal,
+    Pencil,
+    Plus,
+    Search,
+    Trash2,
+    User as UserIcon,
+    Users,
+    X,
+    ChevronLeft,
+    ChevronRight,
+    ChevronsLeft,
+    ChevronsRight,
+    SlidersHorizontal,
+    CheckCircle2,
+    XCircle,
+} from 'lucide-react';
 import { useState } from 'react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -19,7 +37,36 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem } from '@/types';
 
@@ -38,6 +85,8 @@ interface PaginatedUsers {
     last_page: number;
     per_page: number;
     total: number;
+    from: number;
+    to: number;
     links: Array<{
         url: string | null;
         label: string;
@@ -49,6 +98,8 @@ interface Props {
     users: PaginatedUsers;
     filters: {
         search?: string;
+        status?: string;
+        per_page?: string;
     };
 }
 
@@ -61,12 +112,29 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function Index({ users, filters }: Props) {
     const [search, setSearch] = useState(filters.search || '');
+    const [statusFilter, setStatusFilter] = useState(filters.status || 'all');
     const [deleteUser, setDeleteUser] = useState<User | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [showFilters, setShowFilters] = useState(
+        !!(filters.search || filters.status)
+    );
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
-        router.get('/users', { search }, { preserveState: true });
+        applyFilters();
+    };
+
+    const applyFilters = () => {
+        const params: Record<string, string> = {};
+        if (search) params.search = search;
+        if (statusFilter && statusFilter !== 'all') params.status = statusFilter;
+        router.get('/users', params, { preserveState: true });
+    };
+
+    const clearFilters = () => {
+        setSearch('');
+        setStatusFilter('all');
+        router.get('/users');
     };
 
     const handleDelete = () => {
@@ -90,13 +158,28 @@ export default function Index({ users, filters }: Props) {
             .slice(0, 2);
     };
 
+    const formatDate = (date: string) => {
+        return new Date(date).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+        });
+    };
+
+    const hasActiveFilters = filters.search || filters.status;
+
+    // Stats calculations
+    const verifiedCount = users.data.filter((u) => u.email_verified_at).length;
+    const unverifiedCount = users.data.length - verifiedCount;
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Users" />
 
             <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                    <div>
+                {/* Header Section */}
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="space-y-1">
                         <h1 className="text-3xl font-bold tracking-tight">
                             Users
                         </h1>
@@ -105,171 +188,443 @@ export default function Index({ users, filters }: Props) {
                         </p>
                     </div>
                     <Link href="/users/create">
-                        <Button>
+                        <Button className="w-full sm:w-auto">
                             <Plus className="mr-2 h-4 w-4" />
                             New User
                         </Button>
                     </Link>
                 </div>
 
+                {/* Stats Cards */}
+                <div className="grid gap-4 md:grid-cols-3">
+                    <Card className="border-l-4 border-l-primary">
+                        <CardContent className="p-4">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm font-medium text-muted-foreground">
+                                        Total Users
+                                    </p>
+                                    <p className="text-2xl font-bold">
+                                        {users.total}
+                                    </p>
+                                </div>
+                                <div className="rounded-full bg-primary/10 p-3">
+                                    <Users className="h-5 w-5 text-primary" />
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                    <Card className="border-l-4 border-l-green-500">
+                        <CardContent className="p-4">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm font-medium text-muted-foreground">
+                                        Verified
+                                    </p>
+                                    <p className="text-2xl font-bold text-green-600">
+                                        {verifiedCount}
+                                    </p>
+                                </div>
+                                <div className="rounded-full bg-green-500/10 p-3">
+                                    <CheckCircle2 className="h-5 w-5 text-green-500" />
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                    <Card className="border-l-4 border-l-orange-500">
+                        <CardContent className="p-4">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm font-medium text-muted-foreground">
+                                        Pending
+                                    </p>
+                                    <p className="text-2xl font-bold text-orange-600">
+                                        {unverifiedCount}
+                                    </p>
+                                </div>
+                                <div className="rounded-full bg-orange-500/10 p-3">
+                                    <XCircle className="h-5 w-5 text-orange-500" />
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* Main Content Card */}
                 <Card>
-                    <CardHeader>
-                        <CardTitle>User List</CardTitle>
-                        <CardDescription>
-                            {users.total} total users in the system
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <form onSubmit={handleSearch} className="mb-6">
-                            <div className="flex gap-2">
-                                <div className="relative flex-1">
+                    <CardHeader className="border-b bg-muted/30">
+                        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <CardTitle className="text-lg">
+                                    User List
+                                </CardTitle>
+                                <CardDescription>
+                                    Showing {users.from || 0} to {users.to || 0}{' '}
+                                    of {users.total} users
+                                </CardDescription>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <form
+                                    onSubmit={handleSearch}
+                                    className="relative"
+                                >
                                     <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                     <Input
                                         type="text"
-                                        placeholder="Search by name or email..."
+                                        placeholder="Search users..."
                                         value={search}
                                         onChange={(e) =>
                                             setSearch(e.target.value)
                                         }
-                                        className="pl-10"
+                                        className="w-full pl-10 sm:w-62.5"
                                     />
+                                </form>
+                                <TooltipProvider>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <Button
+                                                variant={
+                                                    showFilters
+                                                        ? 'secondary'
+                                                        : 'outline'
+                                                }
+                                                size="icon"
+                                                onClick={() =>
+                                                    setShowFilters(!showFilters)
+                                                }
+                                                className="relative"
+                                            >
+                                                <SlidersHorizontal className="h-4 w-4" />
+                                                {hasActiveFilters && (
+                                                    <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-primary" />
+                                                )}
+                                            </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p>Toggle filters</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
+                            </div>
+                        </div>
+
+                        {/* Expandable Filters */}
+                        {showFilters && (
+                            <div className="mt-4 flex flex-wrap items-center gap-3 rounded-lg border bg-background p-4">
+                                <div className="flex items-center gap-2">
+                                    <Filter className="h-4 w-4 text-muted-foreground" />
+                                    <span className="text-sm font-medium">
+                                        Filters:
+                                    </span>
                                 </div>
-                                <Button type="submit">Search</Button>
-                                {filters.search && (
+                                <Select
+                                    value={statusFilter}
+                                    onValueChange={(value) => {
+                                        setStatusFilter(value);
+                                    }}
+                                >
+                                    <SelectTrigger className="w-37.5">
+                                        <SelectValue placeholder="Status" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">
+                                            All Status
+                                        </SelectItem>
+                                        <SelectItem value="verified">
+                                            Verified
+                                        </SelectItem>
+                                        <SelectItem value="unverified">
+                                            Unverified
+                                        </SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <Button
+                                    onClick={applyFilters}
+                                    size="sm"
+                                    className="ml-auto"
+                                >
+                                    Apply
+                                </Button>
+                                {hasActiveFilters && (
                                     <Button
-                                        type="button"
-                                        variant="outline"
-                                        onClick={() => {
-                                            setSearch('');
-                                            router.get('/users');
-                                        }}
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={clearFilters}
                                     >
+                                        <X className="mr-1 h-4 w-4" />
                                         Clear
                                     </Button>
                                 )}
                             </div>
-                        </form>
-
-                        <div className="space-y-4">
-                            {users.data.length === 0 ? (
-                                <div className="py-12 text-center">
-                                    <UserIcon className="mx-auto h-12 w-12 text-muted-foreground" />
-                                    <h3 className="mt-4 text-lg font-semibold">
-                                        No users found
-                                    </h3>
-                                    <p className="text-muted-foreground">
-                                        {filters.search
-                                            ? 'Try adjusting your search'
-                                            : 'Get started by creating a new user'}
-                                    </p>
+                        )}
+                    </CardHeader>
+                    <CardContent className="p-0">
+                        {users.data.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center py-16">
+                                <div className="rounded-full bg-muted p-4">
+                                    <UserIcon className="h-8 w-8 text-muted-foreground" />
                                 </div>
-                            ) : (
-                                users.data.map((user) => (
-                                    <div
-                                        key={user.id}
-                                        className="flex items-center justify-between rounded-lg border p-4"
+                                <h3 className="mt-4 text-lg font-semibold">
+                                    No users found
+                                </h3>
+                                <p className="mt-1 text-sm text-muted-foreground">
+                                    {hasActiveFilters
+                                        ? 'Try adjusting your filters'
+                                        : 'Get started by creating a new user'}
+                                </p>
+                                {hasActiveFilters && (
+                                    <Button
+                                        variant="outline"
+                                        onClick={clearFilters}
+                                        className="mt-4"
                                     >
-                                        <div className="flex items-center gap-4">
-                                            <Avatar className="h-12 w-12">
-                                                <AvatarFallback>
-                                                    {getInitials(user.name)}
-                                                </AvatarFallback>
-                                            </Avatar>
-                                            <div>
-                                                <Link
-                                                    href={`/users/${user.id}`}
-                                                    className="font-semibold hover:underline"
-                                                >
-                                                    {user.name}
-                                                </Link>
-                                                <p className="text-sm text-muted-foreground">
-                                                    {user.email}
-                                                </p>
-                                                <div className="mt-1 flex items-center gap-2">
-                                                    {user.email_verified_at ? (
-                                                        <Badge
-                                                            variant="secondary"
-                                                            className="text-xs"
+                                        Clear Filters
+                                    </Button>
+                                )}
+                            </div>
+                        ) : (
+                            <Table>
+                                <TableHeader>
+                                    <TableRow className="bg-muted/30 hover:bg-muted/30">
+                                        <TableHead className="w-75">
+                                            User
+                                        </TableHead>
+                                        <TableHead>Email</TableHead>
+                                        <TableHead className="text-center">
+                                            Status
+                                        </TableHead>
+                                        <TableHead>Joined</TableHead>
+                                        <TableHead className="w-17.5 text-right">
+                                            Actions
+                                        </TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {users.data.map((user) => (
+                                        <TableRow
+                                            key={user.id}
+                                            className="group"
+                                        >
+                                            <TableCell>
+                                                <div className="flex items-center gap-3">
+                                                    <Avatar className="h-10 w-10 border-2 border-background shadow-sm">
+                                                        <AvatarFallback className="bg-linear-to-br from-primary/20 to-primary/10 text-sm font-semibold">
+                                                            {getInitials(
+                                                                user.name
+                                                            )}
+                                                        </AvatarFallback>
+                                                    </Avatar>
+                                                    <div>
+                                                        <Link
+                                                            href={`/users/${user.id}`}
+                                                            className="font-medium hover:text-primary hover:underline"
                                                         >
-                                                            Verified
-                                                        </Badge>
-                                                    ) : (
-                                                        <Badge
-                                                            variant="outline"
-                                                            className="text-xs"
-                                                        >
-                                                            Unverified
-                                                        </Badge>
-                                                    )}
-                                                    <span className="text-xs text-muted-foreground">
-                                                        Joined{' '}
-                                                        {new Date(
-                                                            user.created_at,
-                                                        ).toLocaleDateString()}
-                                                    </span>
+                                                            {user.name}
+                                                        </Link>
+                                                        <p className="text-xs text-muted-foreground">
+                                                            ID: #{user.id}
+                                                        </p>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                        <div className="flex gap-2">
-                                            <Link
-                                                href={`/users/${user.id}/edit`}
-                                            >
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                >
-                                                    <Pencil className="h-4 w-4" />
-                                                </Button>
-                                            </Link>
+                                            </TableCell>
+                                            <TableCell className="text-muted-foreground">
+                                                {user.email}
+                                            </TableCell>
+                                            <TableCell className="text-center">
+                                                {user.email_verified_at ? (
+                                                    <Badge className="bg-green-500/10 text-green-600 hover:bg-green-500/20">
+                                                        <CheckCircle2 className="mr-1 h-3 w-3" />
+                                                        Verified
+                                                    </Badge>
+                                                ) : (
+                                                    <Badge
+                                                        variant="outline"
+                                                        className="border-orange-300 text-orange-600"
+                                                    >
+                                                        <XCircle className="mr-1 h-3 w-3" />
+                                                        Pending
+                                                    </Badge>
+                                                )}
+                                            </TableCell>
+                                            <TableCell className="text-muted-foreground">
+                                                {formatDate(user.created_at)}
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger
+                                                        asChild
+                                                    >
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="h-8 w-8 opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100"
+                                                        >
+                                                            <MoreHorizontal className="h-4 w-4" />
+                                                            <span className="sr-only">
+                                                                Open menu
+                                                            </span>
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end">
+                                                        <DropdownMenuLabel>
+                                                            Actions
+                                                        </DropdownMenuLabel>
+                                                        <DropdownMenuSeparator />
+                                                        <DropdownMenuItem
+                                                            asChild
+                                                        >
+                                                            <Link
+                                                                href={`/users/${user.id}`}
+                                                            >
+                                                                <Eye className="mr-2 h-4 w-4" />
+                                                                View Details
+                                                            </Link>
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem
+                                                            asChild
+                                                        >
+                                                            <Link
+                                                                href={`/users/${user.id}/edit`}
+                                                            >
+                                                                <Pencil className="mr-2 h-4 w-4" />
+                                                                Edit User
+                                                            </Link>
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuSeparator />
+                                                        <DropdownMenuItem
+                                                            variant="destructive"
+                                                            onClick={() =>
+                                                                setDeleteUser(
+                                                                    user
+                                                                )
+                                                            }
+                                                        >
+                                                            <Trash2 className="mr-2 h-4 w-4" />
+                                                            Delete User
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        )}
+
+                        {/* Pagination */}
+                        {users.last_page > 1 && (
+                            <div className="flex items-center justify-between border-t px-4 py-4">
+                                <p className="text-sm text-muted-foreground">
+                                    Page {users.current_page} of{' '}
+                                    {users.last_page}
+                                </p>
+                                <div className="flex items-center gap-1">
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        className="h-8 w-8"
+                                        disabled={users.current_page === 1}
+                                        onClick={() =>
+                                            router.get(
+                                                `/users?page=1${filters.search ? `&search=${filters.search}` : ''}`
+                                            )
+                                        }
+                                    >
+                                        <ChevronsLeft className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        className="h-8 w-8"
+                                        disabled={users.current_page === 1}
+                                        onClick={() =>
+                                            router.get(
+                                                `/users?page=${users.current_page - 1}${filters.search ? `&search=${filters.search}` : ''}`
+                                            )
+                                        }
+                                    >
+                                        <ChevronLeft className="h-4 w-4" />
+                                    </Button>
+                                    {users.links
+                                        .slice(1, -1)
+                                        .map((link, index) => (
                                             <Button
-                                                variant="outline"
-                                                size="sm"
+                                                key={index}
+                                                variant={
+                                                    link.active
+                                                        ? 'default'
+                                                        : 'outline'
+                                                }
+                                                size="icon"
+                                                className="h-8 w-8"
+                                                disabled={!link.url}
                                                 onClick={() =>
-                                                    setDeleteUser(user)
+                                                    link.url &&
+                                                    router.get(link.url)
                                                 }
                                             >
-                                                <Trash2 className="h-4 w-4 text-destructive" />
+                                                {link.label}
                                             </Button>
-                                        </div>
-                                    </div>
-                                ))
-                            )}
-                        </div>
-
-                        {users.last_page > 1 && (
-                            <div className="mt-6 flex justify-center gap-1">
-                                {users.links.map((link, index) => (
+                                        ))}
                                     <Button
-                                        key={index}
-                                        variant={
-                                            link.active ? 'default' : 'outline'
+                                        variant="outline"
+                                        size="icon"
+                                        className="h-8 w-8"
+                                        disabled={
+                                            users.current_page ===
+                                            users.last_page
                                         }
-                                        size="sm"
-                                        disabled={!link.url}
                                         onClick={() =>
-                                            link.url && router.get(link.url)
+                                            router.get(
+                                                `/users?page=${users.current_page + 1}${filters.search ? `&search=${filters.search}` : ''}`
+                                            )
                                         }
-                                        dangerouslySetInnerHTML={{
-                                            __html: link.label,
-                                        }}
-                                    />
-                                ))}
+                                    >
+                                        <ChevronRight className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        className="h-8 w-8"
+                                        disabled={
+                                            users.current_page ===
+                                            users.last_page
+                                        }
+                                        onClick={() =>
+                                            router.get(
+                                                `/users?page=${users.last_page}${filters.search ? `&search=${filters.search}` : ''}`
+                                            )
+                                        }
+                                    >
+                                        <ChevronsRight className="h-4 w-4" />
+                                    </Button>
+                                </div>
                             </div>
                         )}
                     </CardContent>
                 </Card>
             </div>
 
-            <Dialog open={!!deleteUser} onOpenChange={() => setDeleteUser(null)}>
+            {/* Delete Dialog */}
+            <Dialog
+                open={!!deleteUser}
+                onOpenChange={() => setDeleteUser(null)}
+            >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Delete User</DialogTitle>
+                        <DialogTitle className="flex items-center gap-2">
+                            <Trash2 className="h-5 w-5 text-destructive" />
+                            Delete User
+                        </DialogTitle>
                         <DialogDescription>
-                            Are you sure you want to delete {deleteUser?.name}?
-                            This action cannot be undone.
+                            Are you sure you want to delete{' '}
+                            <span className="font-semibold">
+                                {deleteUser?.name}
+                            </span>
+                            ? This action cannot be undone.
                         </DialogDescription>
                     </DialogHeader>
-                    <DialogFooter>
+                    <DialogFooter className="gap-2 sm:gap-0">
                         <Button
                             variant="outline"
                             onClick={() => setDeleteUser(null)}
@@ -282,7 +637,7 @@ export default function Index({ users, filters }: Props) {
                             onClick={handleDelete}
                             disabled={isDeleting}
                         >
-                            {isDeleting ? 'Deleting...' : 'Delete'}
+                            {isDeleting ? 'Deleting...' : 'Delete User'}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

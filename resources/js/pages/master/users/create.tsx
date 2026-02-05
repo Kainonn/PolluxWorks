@@ -1,5 +1,6 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, User, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { useState } from 'react';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,6 +12,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
 import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem } from '@/types';
 
@@ -33,6 +35,9 @@ export default function Create() {
         password_confirmation: '',
     });
 
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         post('/users');
@@ -43,6 +48,7 @@ export default function Create() {
             <Head title="Create User" />
 
             <div className="space-y-6">
+                {/* Header */}
                 <div className="flex items-center gap-4">
                     <Link href="/users">
                         <Button variant="outline" size="icon">
@@ -59,94 +65,191 @@ export default function Create() {
                     </div>
                 </div>
 
-                <Card className="mx-auto max-w-2xl">
-                    <CardHeader>
-                        <CardTitle>User Information</CardTitle>
-                        <CardDescription>
-                            Enter the details for the new user
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            <div className="space-y-2">
-                                <Label htmlFor="name">Name</Label>
-                                <Input
-                                    id="name"
-                                    type="text"
-                                    value={data.name}
-                                    onChange={(e) =>
-                                        setData('name', e.target.value)
-                                    }
-                                    placeholder="John Doe"
-                                    autoFocus
-                                />
-                                <InputError message={errors.name} />
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="email">Email</Label>
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    value={data.email}
-                                    onChange={(e) =>
-                                        setData('email', e.target.value)
-                                    }
-                                    placeholder="john@example.com"
-                                />
-                                <InputError message={errors.email} />
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="password">Password</Label>
-                                <Input
-                                    id="password"
-                                    type="password"
-                                    value={data.password}
-                                    onChange={(e) =>
-                                        setData('password', e.target.value)
-                                    }
-                                />
-                                <InputError message={errors.password} />
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="password_confirmation">
-                                    Confirm Password
-                                </Label>
-                                <Input
-                                    id="password_confirmation"
-                                    type="password"
-                                    value={data.password_confirmation}
-                                    onChange={(e) =>
-                                        setData(
-                                            'password_confirmation',
-                                            e.target.value,
-                                        )
-                                    }
-                                />
-                                <InputError
-                                    message={errors.password_confirmation}
-                                />
-                            </div>
-
-                            <div className="flex justify-end gap-3">
-                                <Link href="/users">
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        disabled={processing}
+                {/* Form Card */}
+                <div className="mx-auto max-w-2xl">
+                    <Card className="overflow-hidden">
+                        <CardHeader className="border-b bg-muted/30">
+                            <CardTitle className="flex items-center gap-2">
+                                <User className="h-5 w-5" />
+                                User Information
+                            </CardTitle>
+                            <CardDescription>
+                                Enter the details for the new user
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="p-6">
+                            <form onSubmit={handleSubmit} className="space-y-6">
+                                {/* Name Field */}
+                                <div className="space-y-2">
+                                    <Label
+                                        htmlFor="name"
+                                        className="flex items-center gap-2"
                                     >
-                                        Cancel
+                                        <User className="h-4 w-4 text-muted-foreground" />
+                                        Full Name
+                                    </Label>
+                                    <Input
+                                        id="name"
+                                        type="text"
+                                        value={data.name}
+                                        onChange={(e) =>
+                                            setData('name', e.target.value)
+                                        }
+                                        placeholder="John Doe"
+                                        className="h-11"
+                                        autoFocus
+                                    />
+                                    <InputError message={errors.name} />
+                                </div>
+
+                                {/* Email Field */}
+                                <div className="space-y-2">
+                                    <Label
+                                        htmlFor="email"
+                                        className="flex items-center gap-2"
+                                    >
+                                        <Mail className="h-4 w-4 text-muted-foreground" />
+                                        Email Address
+                                    </Label>
+                                    <Input
+                                        id="email"
+                                        type="email"
+                                        value={data.email}
+                                        onChange={(e) =>
+                                            setData('email', e.target.value)
+                                        }
+                                        placeholder="john@example.com"
+                                        className="h-11"
+                                    />
+                                    <InputError message={errors.email} />
+                                </div>
+
+                                <Separator />
+
+                                {/* Password Section */}
+                                <div className="space-y-4">
+                                    <h3 className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
+                                        <Lock className="h-4 w-4" />
+                                        Security
+                                    </h3>
+
+                                    {/* Password Field */}
+                                    <div className="space-y-2">
+                                        <Label htmlFor="password">
+                                            Password
+                                        </Label>
+                                        <div className="relative">
+                                            <Input
+                                                id="password"
+                                                type={
+                                                    showPassword
+                                                        ? 'text'
+                                                        : 'password'
+                                                }
+                                                value={data.password}
+                                                onChange={(e) =>
+                                                    setData(
+                                                        'password',
+                                                        e.target.value
+                                                    )
+                                                }
+                                                placeholder="••••••••"
+                                                className="h-11 pr-10"
+                                            />
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="icon"
+                                                className="absolute right-0 top-0 h-11 w-11 hover:bg-transparent"
+                                                onClick={() =>
+                                                    setShowPassword(!showPassword)
+                                                }
+                                            >
+                                                {showPassword ? (
+                                                    <EyeOff className="h-4 w-4 text-muted-foreground" />
+                                                ) : (
+                                                    <Eye className="h-4 w-4 text-muted-foreground" />
+                                                )}
+                                            </Button>
+                                        </div>
+                                        <InputError message={errors.password} />
+                                    </div>
+
+                                    {/* Confirm Password Field */}
+                                    <div className="space-y-2">
+                                        <Label htmlFor="password_confirmation">
+                                            Confirm Password
+                                        </Label>
+                                        <div className="relative">
+                                            <Input
+                                                id="password_confirmation"
+                                                type={
+                                                    showConfirmPassword
+                                                        ? 'text'
+                                                        : 'password'
+                                                }
+                                                value={data.password_confirmation}
+                                                onChange={(e) =>
+                                                    setData(
+                                                        'password_confirmation',
+                                                        e.target.value
+                                                    )
+                                                }
+                                                placeholder="••••••••"
+                                                className="h-11 pr-10"
+                                            />
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="icon"
+                                                className="absolute right-0 top-0 h-11 w-11 hover:bg-transparent"
+                                                onClick={() =>
+                                                    setShowConfirmPassword(
+                                                        !showConfirmPassword
+                                                    )
+                                                }
+                                            >
+                                                {showConfirmPassword ? (
+                                                    <EyeOff className="h-4 w-4 text-muted-foreground" />
+                                                ) : (
+                                                    <Eye className="h-4 w-4 text-muted-foreground" />
+                                                )}
+                                            </Button>
+                                        </div>
+                                        <InputError
+                                            message={errors.password_confirmation}
+                                        />
+                                    </div>
+                                </div>
+
+                                <Separator />
+
+                                {/* Actions */}
+                                <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                                    <Link href="/users">
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            disabled={processing}
+                                            className="w-full sm:w-auto"
+                                        >
+                                            Cancel
+                                        </Button>
+                                    </Link>
+                                    <Button
+                                        type="submit"
+                                        disabled={processing}
+                                        className="w-full sm:w-auto"
+                                    >
+                                        {processing
+                                            ? 'Creating...'
+                                            : 'Create User'}
                                     </Button>
-                                </Link>
-                                <Button type="submit" disabled={processing}>
-                                    {processing ? 'Creating...' : 'Create User'}
-                                </Button>
-                            </div>
-                        </form>
-                    </CardContent>
-                </Card>
+                                </div>
+                            </form>
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
         </AppLayout>
     );
