@@ -123,4 +123,19 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Tenant Domain Configuration
+    |--------------------------------------------------------------------------
+    |
+    | These values configure the multi-tenant subdomain settings.
+    | The tenant_domain is the base domain for tenant subdomains.
+    | The tenant_domain_local is used for local development.
+    |
+    */
+
+    'tenant_domain' => env('TENANT_DOMAIN', 'polluxworks.com'),
+
+    'tenant_domain_local' => env('TENANT_DOMAIN_LOCAL', 'polluxworks.test'),
+
 ];
