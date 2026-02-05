@@ -269,12 +269,110 @@ class TenantProvisioningService
      */
     protected function seedTenantData(Tenant $tenant): void
     {
-        // Run tenant-specific seeders
-        // \Artisan::call('db:seed', [
-        //     '--class' => 'Database\\Seeders\\Tenants\\TenantDatabaseSeeder',
-        //     '--database' => 'tenant',
-        //     '--force' => true,
-        // ]);
+        $this->configureTenantConnection($tenant);
+
+        // Create default permissions
+        $permissions = [
+            // Users
+            ['name' => 'users.view', 'display_name' => 'View Users', 'group' => 'users'],
+            ['name' => 'users.create', 'display_name' => 'Create Users', 'group' => 'users'],
+            ['name' => 'users.edit', 'display_name' => 'Edit Users', 'group' => 'users'],
+            ['name' => 'users.delete', 'display_name' => 'Delete Users', 'group' => 'users'],
+
+            // Roles
+            ['name' => 'roles.view', 'display_name' => 'View Roles', 'group' => 'roles'],
+            ['name' => 'roles.create', 'display_name' => 'Create Roles', 'group' => 'roles'],
+            ['name' => 'roles.edit', 'display_name' => 'Edit Roles', 'group' => 'roles'],
+            ['name' => 'roles.delete', 'display_name' => 'Delete Roles', 'group' => 'roles'],
+
+            // Settings
+            ['name' => 'settings.view', 'display_name' => 'View Settings', 'group' => 'settings'],
+            ['name' => 'settings.edit', 'display_name' => 'Edit Settings', 'group' => 'settings'],
+
+            // Reports
+            ['name' => 'reports.view', 'display_name' => 'View Reports', 'group' => 'reports'],
+            ['name' => 'reports.export', 'display_name' => 'Export Reports', 'group' => 'reports'],
+        ];
+
+        $permissionIds = [];
+        foreach ($permissions as $permission) {
+            $id = DB::connection('tenant')->table('permissions')->insertGetId([
+                'name' => $permission['name'],
+                'display_name' => $permission['display_name'],
+                'group' => $permission['group'],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+            $permissionIds[$permission['name']] = $id;
+        }
+
+        // Create default roles
+        $roles = [
+            [
+                'name' => 'admin',
+                'display_name' => 'Administrator',
+                'description' => 'Full access to all features',
+                'is_system' => true,
+                'permissions' => array_keys($permissionIds), // All permissions
+            ],
+            [
+                'name' => 'manager',
+                'display_name' => 'Manager',
+                'description' => 'Can manage users and view reports',
+                'is_system' => true,
+                'permissions' => ['users.view', 'users.create', 'users.edit', 'roles.view', 'settings.view', 'reports.view', 'reports.export'],
+            ],
+            [
+                'name' => 'member',
+                'display_name' => 'Member',
+                'description' => 'Basic access to the platform',
+                'is_system' => true,
+                'permissions' => ['reports.view'],
+            ],
+        ];
+
+        foreach ($roles as $roleData) {
+            $roleId = DB::connection('tenant')->table('roles')->insertGetId([
+                'name' => $roleData['name'],
+                'display_name' => $roleData['display_name'],
+                'description' => $roleData['description'],
+                'is_system' => $roleData['is_system'],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            // Assign permissions to role
+            foreach ($roleData['permissions'] as $permissionName) {
+                if (isset($permissionIds[$permissionName])) {
+                    DB::connection('tenant')->table('role_permissions')->insert([
+                        'role_id' => $roleId,
+                        'permission_id' => $permissionIds[$permissionName],
+                    ]);
+                }
+            }
+        }
+
+        // Create default settings
+        $settings = [
+            ['key' => 'company_name', 'value' => $tenant->name, 'group' => 'general'],
+            ['key' => 'timezone', 'value' => $tenant->timezone ?? 'UTC', 'group' => 'general'],
+            ['key' => 'date_format', 'value' => 'Y-m-d', 'group' => 'general'],
+            ['key' => 'time_format', 'value' => 'H:i', 'group' => 'general'],
+            ['key' => 'primary_color', 'value' => '#3b82f6', 'group' => 'branding'],
+            ['key' => 'email_notifications', 'value' => 'true', 'group' => 'notifications'],
+            ['key' => 'password_min_length', 'value' => '8', 'group' => 'security'],
+            ['key' => 'session_timeout', 'value' => '60', 'group' => 'security'],
+        ];
+
+        foreach ($settings as $setting) {
+            DB::connection('tenant')->table('settings')->insert([
+                'key' => $setting['key'],
+                'value' => $setting['value'],
+                'group' => $setting['group'],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
     }
 
     /**

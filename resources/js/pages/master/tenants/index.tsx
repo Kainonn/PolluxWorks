@@ -41,6 +41,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
 import {
     Select,
     SelectContent,
@@ -48,10 +49,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import type { BreadcrumbItem } from '@/types';
-import { Progress } from '@/components/ui/progress';
-import { Textarea } from '@/components/ui/textarea';
 
 interface Plan {
     id: number;

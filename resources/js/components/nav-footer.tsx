@@ -1,5 +1,5 @@
-import type { ComponentPropsWithoutRef } from 'react';
 import { Sparkles } from 'lucide-react';
+import type { ComponentPropsWithoutRef } from 'react';
 import {
     SidebarGroup,
     SidebarGroupContent,
