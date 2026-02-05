@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { BookOpen, Github, LayoutGrid, Users, HelpCircle, Shield } from 'lucide-react';
+import { BookOpen, Github, LayoutGrid, Users, HelpCircle, Shield, CreditCard } from 'lucide-react';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -31,6 +31,11 @@ const mainNavItems: NavItem[] = [
         title: 'Roles',
         href: '/roles',
         icon: Shield,
+    },
+    {
+        title: 'Plans',
+        href: '/plans',
+        icon: CreditCard,
     },
 ];
 

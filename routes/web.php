@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Master\PlanController;
 use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\UserController;
 use Illuminate\Support\Facades\Route;
@@ -20,6 +21,7 @@ Route::get('dashboard', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('users', UserController::class);
     Route::resource('roles', RoleController::class);
+    Route::resource('plans', PlanController::class);
 });
 
 require __DIR__.'/settings.php';
