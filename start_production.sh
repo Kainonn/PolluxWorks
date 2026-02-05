@@ -25,12 +25,14 @@ echo -e "${GREEN}✓ Cachés limpiadas${NC}"
 echo ""
 
 # 2. Optimizar Laravel para producción
+# NOTA: No cachear config/routes en desarrollo local con artisan serve
+# porque puede causar problemas con URLs y puertos
 echo -e "${BLUE}⚡ Optimizando Laravel...${NC}"
-php artisan config:cache
-php artisan route:cache
+# php artisan config:cache  # Desactivado para dev local
+# php artisan route:cache   # Desactivado para dev local
 php artisan view:cache
 php artisan event:cache
-php artisan optimize
+# php artisan optimize      # Desactivado para dev local
 echo -e "${GREEN}✓ Laravel optimizado${NC}"
 echo ""
 
@@ -82,4 +84,5 @@ echo ""
 # 8. Levantar el servidor PHP en modo producción
 # Para producción real, deberías usar nginx/apache en lugar de artisan serve
 # pero esto funciona para testing de producción local
-php artisan serve --host=0.0.0.0 --port=8000 --env=production
+# Usamos localhost para evitar problemas de CORS con subdominios
+php artisan serve --host=localhost --port=8000 --env=production

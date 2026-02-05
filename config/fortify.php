@@ -88,9 +88,9 @@ return [
 
     'prefix' => '',
 
-    // Restrict Fortify routes to localhost only (not subdomains)
-    // Tenant authentication uses separate routes
-    'domain' => 'localhost',
+    // Restrict Fortify routes to main domain only (no subdomains)
+    // Use env variable so it includes the port in development
+    'domain' => env('FORTIFY_DOMAIN', null),
 
     /*
     |--------------------------------------------------------------------------
