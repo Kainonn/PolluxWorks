@@ -152,7 +152,8 @@ export default function Dashboard() {
 
                 {/* Footer Info */}
                 <div className="mt-auto pt-4 border-t text-center text-xs text-muted-foreground">
-                    <p>© {new Date().getFullYear()} PolluxWorks. Built with ❤️ using Laravel & React.</p>
+                    <p>© {new Date().getFullYear()} PolluxWorks. All rights reserved.</p>
+                    <p className="mt-1">Built for modern manufacturing.</p>
                 </div>
             </div>
         </AppLayout>
