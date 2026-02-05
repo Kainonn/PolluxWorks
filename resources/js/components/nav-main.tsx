@@ -24,7 +24,7 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
                             asChild
                             isActive={isCurrentUrl(item.href)}
                             tooltip={{ children: item.title }}
-                            className="transition-all duration-200 hover:bg-gradient-to-r hover:from-indigo-500/10 hover:to-purple-500/10 data-[active=true]:bg-gradient-to-r data-[active=true]:from-indigo-500/20 data-[active=true]:to-purple-500/20 data-[active=true]:border-l-2 data-[active=true]:border-indigo-500"
+                            className="transition-all duration-200 hover:bg-linear-to-r hover:from-indigo-500/10 hover:to-purple-500/10 data-[active=true]:bg-linear-to-r data-[active=true]:from-indigo-500/20 data-[active=true]:to-purple-500/20 data-[active=true]:border-l-2 data-[active=true]:border-indigo-500"
                         >
                             <Link href={item.href} prefetch>
                                 {item.icon && <item.icon className="text-indigo-500 dark:text-indigo-400" />}

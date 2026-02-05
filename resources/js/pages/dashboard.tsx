@@ -28,7 +28,7 @@ function StatCard({ title, value, description, icon, trend, trendValue }: StatCa
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                     {title}
                 </CardTitle>
-                <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-indigo-500/20 to-purple-500/20 p-2 text-indigo-600 dark:text-indigo-400">
+                <div className="h-8 w-8 rounded-lg bg-linear-to-br from-indigo-500/20 to-purple-500/20 p-2 text-indigo-600 dark:text-indigo-400">
                     {icon}
                 </div>
             </CardHeader>
@@ -44,7 +44,7 @@ function StatCard({ title, value, description, icon, trend, trendValue }: StatCa
                     <CardDescription className="text-xs">{description}</CardDescription>
                 </div>
             </CardContent>
-            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 pointer-events-none" />
+            <div className="absolute inset-0 bg-linear-to-br from-indigo-500/5 to-purple-500/5 pointer-events-none" />
         </Card>
     );
 }
@@ -57,7 +57,7 @@ export default function Dashboard() {
                 {/* Welcome Section */}
                 <div className="flex flex-col gap-1">
                     <h1 className="text-2xl font-bold tracking-tight">
-                        Welcome to <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">PolluxWorks</span>
+                        Welcome to <span className="bg-linear-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">PolluxWorks</span>
                     </h1>
                     <p className="text-muted-foreground">
                         Here's what's happening with your platform today.
@@ -111,7 +111,7 @@ export default function Dashboard() {
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <div className="h-[300px] flex items-center justify-center rounded-lg bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+                            <div className="h-75 flex items-center justify-center rounded-lg bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
                                 <div className="text-center">
                                     <Activity className="h-12 w-12 mx-auto text-indigo-500/50 mb-2" />
                                     <p className="text-sm text-muted-foreground">Activity chart will appear here</p>
