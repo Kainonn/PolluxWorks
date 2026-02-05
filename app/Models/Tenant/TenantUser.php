@@ -7,6 +7,30 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $email
+ * @property string|null $password
+ * @property string|null $phone
+ * @property string|null $avatar
+ * @property string|null $job_title
+ * @property string|null $department
+ * @property bool $is_active
+ * @property string|null $locale
+ * @property string|null $timezone
+ * @property array|null $preferences
+ * @property string|null $remember_token
+ * @property string|null $two_factor_secret
+ * @property string|null $two_factor_recovery_codes
+ * @property \Illuminate\Support\Carbon|null $email_verified_at
+ * @property \Illuminate\Support\Carbon|null $last_login_at
+ * @property \Illuminate\Support\Carbon|null $two_factor_confirmed_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, TenantRole> $roles
+ */
 class TenantUser extends Authenticatable
 {
     use HasFactory, Notifiable, SoftDeletes;
