@@ -78,7 +78,8 @@ class TenantAuthController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('tenant.dashboard'));
+        // Use relative URL for redirect within tenant subdomain
+        return Inertia::location('/dashboard');
     }
 
     /**
@@ -91,7 +92,7 @@ class TenantAuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('tenant.login');
+        return redirect('/login');
     }
 
     /**
