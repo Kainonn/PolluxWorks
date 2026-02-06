@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { BookOpen, Building2, Github, LayoutGrid, Users, HelpCircle, Shield, CreditCard, FileText, Receipt, Wallet, Webhook, Banknote, ScrollText } from 'lucide-react';
+import { BookOpen, Building2, Github, LayoutGrid, Users, HelpCircle, Shield, CreditCard, FileText, Receipt, Wallet, Webhook, Banknote, ScrollText, ShieldCheck } from 'lucide-react';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -82,6 +82,11 @@ const mainNavItems: NavItem[] = [
         title: 'System Logs',
         href: '/system-logs',
         icon: ScrollText,
+    },
+    {
+        title: 'Audit Trail',
+        href: '/master/audit-trail',
+        icon: ShieldCheck,
     },
 ];
 

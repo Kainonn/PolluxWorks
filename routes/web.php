@@ -6,6 +6,7 @@ use App\Http\Controllers\Master\TenantController;
 use App\Http\Controllers\Master\UserController;
 use App\Http\Controllers\Master\SubscriptionController;
 use App\Http\Controllers\Master\SystemLogController;
+use App\Http\Controllers\Master\AuditEntryController;
 use App\Http\Controllers\Master\Billing\BillingCustomerController;
 use App\Http\Controllers\Master\Billing\PaymentMethodController;
 use App\Http\Controllers\Master\Billing\PaymentController;
@@ -78,9 +79,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('webhooks/{webhookEvent}/ignore', [WebhookEventController::class, 'ignore'])->name('webhooks.ignore');
     });
 
-    // System Logs (Audit Trail)
+    // Operational Logs
     Route::resource('system-logs', SystemLogController::class)->only(['index', 'show']);
     Route::get('system-logs/export', [SystemLogController::class, 'export'])->name('system-logs.export');
+
+    // Audit Trail (Compliance/Enterprise)
+    Route::prefix('master')->name('master.')->group(function () {
+        Route::get('audit-trail', [AuditEntryController::class, 'index'])->name('audit-trail.index');
+        Route::get('audit-trail/export', [AuditEntryController::class, 'export'])->name('audit-trail.export');
+        Route::get('audit-trail/entity-history', [AuditEntryController::class, 'entityHistory'])->name('audit-trail.entity-history');
+        Route::get('audit-trail/{auditEntry}', [AuditEntryController::class, 'show'])->name('audit-trail.show');
+    });
 });
 
 // API Routes for Tenant Heartbeat (no web middleware)
