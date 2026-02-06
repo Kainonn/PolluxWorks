@@ -1,20 +1,8 @@
 /**
- * Normalized routes - wraps Wayfinder routes to use relative URLs
- * This file provides route helpers that work correctly regardless of port
+ * Normalized routes - provides route helpers that work correctly regardless of port
+ * This file uses hardcoded relative URLs to avoid Wayfinder's absolute URL generation
  */
 
-// Helper function to normalize URLs (remove //domain prefix)
-const normalizeUrl = (url: string): string => {
-    if (url.startsWith('//')) {
-        const match = url.match(/^\/\/[^\/]+(\/.*)?$/);
-        if (match) {
-            return match[1] || '/';
-        }
-    }
-    return url;
-};
-
-// Re-export commonly used routes with normalized URLs
 export const routes = {
     home: () => '/',
     login: () => '/login',
