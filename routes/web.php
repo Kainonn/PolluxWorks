@@ -5,6 +5,7 @@ use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\TenantController;
 use App\Http\Controllers\Master\UserController;
 use App\Http\Controllers\Master\SubscriptionController;
+use App\Http\Controllers\Master\SystemLogController;
 use App\Http\Controllers\Master\Billing\BillingCustomerController;
 use App\Http\Controllers\Master\Billing\PaymentMethodController;
 use App\Http\Controllers\Master\Billing\PaymentController;
@@ -76,6 +77,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('webhooks/{webhookEvent}/retry', [WebhookEventController::class, 'retry'])->name('webhooks.retry');
         Route::post('webhooks/{webhookEvent}/ignore', [WebhookEventController::class, 'ignore'])->name('webhooks.ignore');
     });
+
+    // System Logs (Audit Trail)
+    Route::resource('system-logs', SystemLogController::class)->only(['index', 'show']);
+    Route::get('system-logs/export', [SystemLogController::class, 'export'])->name('system-logs.export');
 });
 
 // API Routes for Tenant Heartbeat (no web middleware)
