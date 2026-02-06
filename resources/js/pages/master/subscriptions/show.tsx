@@ -3,14 +3,12 @@ import {
     AlertCircle,
     ArrowLeft,
     ArrowRightLeft,
-    Calendar,
     CheckCircle2,
     Clock,
     History,
     PauseCircle,
     Pencil,
     PlayCircle,
-    RefreshCw,
     XCircle,
 } from 'lucide-react';
 import { useState } from 'react';
@@ -132,7 +130,7 @@ const eventTypeLabels: Record<string, string> = {
     downgrade_scheduled: 'Downgrade Scheduled',
 };
 
-export default function Show({ subscription, plans, statuses }: Props) {
+export default function Show({ subscription, plans }: Props) {
     const [showChangePlanDialog, setShowChangePlanDialog] = useState(false);
     const [showCancelDialog, setShowCancelDialog] = useState(false);
     const [showReactivateDialog, setShowReactivateDialog] = useState(false);

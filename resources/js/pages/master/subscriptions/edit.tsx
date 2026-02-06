@@ -1,4 +1,4 @@
-import { Head, Link, router, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -59,7 +59,7 @@ interface Props {
     statuses: string[];
 }
 
-export default function Edit({ subscription, plans, statuses }: Props) {
+export default function Edit({ subscription, statuses }: Props) {
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Subscriptions', href: '/subscriptions' },
         { title: subscription.tenant?.name || `Subscription #${subscription.id}`, href: `/subscriptions/${subscription.id}` },
