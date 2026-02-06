@@ -7,6 +7,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
+use Illuminate\Http\Middleware\HandleCors;
 use Illuminate\Support\Facades\Route;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -32,12 +33,25 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->group(base_path('routes/tenant.php'));
 
             // Register main web routes AFTER tenant routes
-            Route::middleware('web')
-                ->group(base_path('routes/web.php'));
+            // Restrict to main domain only (no subdomains)
+            if (app()->environment('local')) {
+                Route::middleware('web')
+                    ->domain('localhost')
+                    ->group(base_path('routes/web.php'));
+            } else {
+                Route::middleware('web')
+                    ->domain($domain)
+                    ->group(base_path('routes/web.php'));
+            }
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
+
+        // Enable CORS handling
+        $middleware->use([
+            HandleCors::class,
+        ]);
 
         // Prepend IdentifyTenant to web middleware so it runs BEFORE session/auth
         $middleware->web(prepend: [
