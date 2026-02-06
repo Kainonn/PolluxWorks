@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { BookOpen, Building2, Github, LayoutGrid, Users, HelpCircle, Shield, CreditCard } from 'lucide-react';
+import { BookOpen, Building2, Github, LayoutGrid, Users, HelpCircle, Shield, CreditCard, FileText, Receipt, Wallet, Webhook, Banknote } from 'lucide-react';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -26,6 +26,42 @@ const mainNavItems: NavItem[] = [
         title: 'Tenants',
         href: '/tenants',
         icon: Building2,
+    },
+    {
+        title: 'Subscriptions',
+        href: '/subscriptions',
+        icon: FileText,
+    },
+    {
+        title: 'Billing',
+        icon: Banknote,
+        items: [
+            {
+                title: 'Customers',
+                href: '/billing/customers',
+                icon: Users,
+            },
+            {
+                title: 'Payment Methods',
+                href: '/billing/payment-methods',
+                icon: CreditCard,
+            },
+            {
+                title: 'Payments',
+                href: '/billing/payments',
+                icon: Wallet,
+            },
+            {
+                title: 'Invoices',
+                href: '/billing/invoices',
+                icon: Receipt,
+            },
+            {
+                title: 'Webhooks',
+                href: '/billing/webhooks',
+                icon: Webhook,
+            },
+        ],
     },
     {
         title: 'Users',

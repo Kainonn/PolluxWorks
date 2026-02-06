@@ -4,6 +4,12 @@ use App\Http\Controllers\Master\PlanController;
 use App\Http\Controllers\Master\RoleController;
 use App\Http\Controllers\Master\TenantController;
 use App\Http\Controllers\Master\UserController;
+use App\Http\Controllers\Master\SubscriptionController;
+use App\Http\Controllers\Master\Billing\BillingCustomerController;
+use App\Http\Controllers\Master\Billing\PaymentMethodController;
+use App\Http\Controllers\Master\Billing\PaymentController;
+use App\Http\Controllers\Master\Billing\InvoiceController;
+use App\Http\Controllers\Master\Billing\WebhookEventController;
 use App\Http\Controllers\Api\HeartbeatController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -41,6 +47,35 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('tenants/{tenant}/domains', [TenantController::class, 'addDomain'])->name('tenants.domains.add');
     Route::delete('tenants/{tenant}/domains', [TenantController::class, 'removeDomain'])->name('tenants.domains.remove');
     Route::post('tenants/{tenant}/domains/verify-dns', [TenantController::class, 'verifyDns'])->name('tenants.domains.verify-dns');
+
+    // Subscription Management
+    Route::resource('subscriptions', SubscriptionController::class)->only(['index', 'show', 'edit', 'update']);
+    Route::post('subscriptions/{subscription}/change-plan', [SubscriptionController::class, 'changePlan'])->name('subscriptions.change-plan');
+    Route::post('subscriptions/{subscription}/cancel', [SubscriptionController::class, 'cancel'])->name('subscriptions.cancel');
+    Route::post('subscriptions/{subscription}/reactivate', [SubscriptionController::class, 'reactivate'])->name('subscriptions.reactivate');
+    Route::delete('subscriptions/{subscription}/cancel-pending-change', [SubscriptionController::class, 'cancelPendingChange'])->name('subscriptions.cancel-pending-change');
+
+    // Billing Management
+    Route::prefix('billing')->name('billing.')->group(function () {
+        // Billing Customers
+        Route::resource('customers', BillingCustomerController::class)->only(['index', 'show', 'update']);
+
+        // Payment Methods
+        Route::resource('payment-methods', PaymentMethodController::class)->only(['index', 'show', 'update']);
+
+        // Payments (read-only)
+        Route::resource('payments', PaymentController::class)->only(['index', 'show']);
+
+        // Invoices
+        Route::resource('invoices', InvoiceController::class)->only(['index', 'show', 'update']);
+        Route::post('invoices/{invoice}/mark-as-paid', [InvoiceController::class, 'markAsPaid'])->name('invoices.mark-as-paid');
+        Route::post('invoices/{invoice}/void', [InvoiceController::class, 'void'])->name('invoices.void');
+
+        // Webhook Events
+        Route::resource('webhooks', WebhookEventController::class)->only(['index', 'show']);
+        Route::post('webhooks/{webhookEvent}/retry', [WebhookEventController::class, 'retry'])->name('webhooks.retry');
+        Route::post('webhooks/{webhookEvent}/ignore', [WebhookEventController::class, 'ignore'])->name('webhooks.ignore');
+    });
 });
 
 // API Routes for Tenant Heartbeat (no web middleware)
