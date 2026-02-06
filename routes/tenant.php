@@ -86,6 +86,18 @@ Route::middleware('auth:tenant')->group(function () {
     ]);
     Route::post('/roles/{role}/duplicate', [TenantRoleController::class, 'duplicate'])->name('tenant.roles.duplicate');
 
+    // Platform Notifications (Tenant view)
+    Route::prefix('notifications')->name('tenant.notifications.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Tenant\TenantNotificationController::class, 'index'])->name('index');
+        Route::get('/dropdown', [\App\Http\Controllers\Tenant\TenantNotificationController::class, 'dropdown'])->name('dropdown');
+        Route::get('/unread-count', [\App\Http\Controllers\Tenant\TenantNotificationController::class, 'unreadCount'])->name('unread-count');
+        Route::post('/read-all', [\App\Http\Controllers\Tenant\TenantNotificationController::class, 'markAllAsRead'])->name('read-all');
+        Route::post('/viewed', [\App\Http\Controllers\Tenant\TenantNotificationController::class, 'markAsViewed'])->name('viewed');
+        Route::post('/{notificationId}/read', [\App\Http\Controllers\Tenant\TenantNotificationController::class, 'markAsRead'])->name('read');
+        Route::post('/{notificationId}/dismiss', [\App\Http\Controllers\Tenant\TenantNotificationController::class, 'dismiss'])->name('dismiss');
+        Route::post('/{notificationId}/click', [\App\Http\Controllers\Tenant\TenantNotificationController::class, 'trackClick'])->name('click');
+    });
+
     // Settings
     Route::prefix('settings')->name('tenant.settings.')->group(function () {
         Route::get('/', [TenantSettingsController::class, 'index'])->name('index');

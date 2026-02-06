@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { Building2, LayoutDashboard, Settings, Shield, Users, BookOpen, HelpCircle, LogOut } from 'lucide-react';
+import { Bell, Building2, LayoutDashboard, Settings, Shield, Users, BookOpen, HelpCircle, LogOut } from 'lucide-react';
 
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -38,6 +38,11 @@ const mainNavItems: NavItem[] = [
         title: 'Roles',
         href: '/roles',
         icon: Shield,
+    },
+    {
+        title: 'Notifications',
+        href: '/notifications',
+        icon: Bell,
     },
     {
         title: 'Settings',

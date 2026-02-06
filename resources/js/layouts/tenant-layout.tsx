@@ -2,6 +2,7 @@ import { Link } from '@inertiajs/react';
 import { Home } from 'lucide-react';
 import type { PropsWithChildren } from 'react';
 
+import { NotificationBell } from '@/components/notification-bell';
 import { TenantSidebar } from '@/components/tenant-sidebar';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { Separator } from '@/components/ui/separator';
@@ -52,7 +53,9 @@ export default function TenantLayout({ children, breadcrumbs = [], tenant }: Ten
                             </BreadcrumbList>
                         </Breadcrumb>
                     </div>
-                    <div className="ml-auto flex items-center gap-2" />
+                    <div className="ml-auto flex items-center gap-2">
+                        <NotificationBell />
+                    </div>
                 </header>
                 <div className="flex flex-1 flex-col gap-4 p-4">{children}</div>
             </SidebarInset>

@@ -132,6 +132,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('providers/{provider}/test', [AiProviderConfigController::class, 'test'])->name('providers.test');
             Route::resource('providers', AiProviderConfigController::class);
         });
+
+        // Platform Notifications (Master)
+        Route::prefix('notifications')->name('notifications.')->group(function () {
+            Route::post('{notification}/toggle', [\App\Http\Controllers\Master\PlatformNotificationController::class, 'toggle'])->name('toggle');
+            Route::post('{notification}/duplicate', [\App\Http\Controllers\Master\PlatformNotificationController::class, 'duplicate'])->name('duplicate');
+            Route::get('stats', [\App\Http\Controllers\Master\PlatformNotificationController::class, 'stats'])->name('stats');
+        });
+        Route::resource('notifications', \App\Http\Controllers\Master\PlatformNotificationController::class);
     });
 });
 

@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { BookOpen, Building2, Github, LayoutGrid, Users, HelpCircle, Shield, CreditCard, FileText, Receipt, Wallet, Webhook, Banknote, ScrollText, ShieldCheck, Brain, Cpu, Wrench, Gauge, GitBranch, ShieldAlert, Server } from 'lucide-react';
+import { Bell, BookOpen, Building2, Github, LayoutGrid, Users, HelpCircle, Shield, CreditCard, FileText, Receipt, Wallet, Webhook, Banknote, ScrollText, ShieldCheck, Brain, Cpu, Wrench, Gauge, GitBranch, ShieldAlert, Server } from 'lucide-react';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -127,6 +127,11 @@ const mainNavItems: NavItem[] = [
         title: 'Audit Trail',
         href: '/master/audit-trail',
         icon: ShieldCheck,
+    },
+    {
+        title: 'Notifications',
+        href: '/master/notifications',
+        icon: Bell,
     },
 ];
 
