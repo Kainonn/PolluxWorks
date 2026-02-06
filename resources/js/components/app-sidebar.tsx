@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { BookOpen, Building2, Github, LayoutGrid, Users, HelpCircle, Shield, CreditCard, FileText, Receipt, Wallet, Webhook, Banknote, ScrollText, ShieldCheck } from 'lucide-react';
+import { BookOpen, Building2, Github, LayoutGrid, Users, HelpCircle, Shield, CreditCard, FileText, Receipt, Wallet, Webhook, Banknote, ScrollText, ShieldCheck, Brain, Cpu, Wrench, Gauge, GitBranch, ShieldAlert, Server } from 'lucide-react';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -59,6 +59,47 @@ const mainNavItems: NavItem[] = [
                 title: 'Webhooks',
                 href: '/billing/webhooks',
                 icon: Webhook,
+            },
+        ],
+    },
+    {
+        title: 'AI Control Center',
+        icon: Brain,
+        items: [
+            {
+                title: 'Models',
+                href: '/master/ai/models',
+                icon: Cpu,
+            },
+            {
+                title: 'Tools Registry',
+                href: '/master/ai/tools',
+                icon: Wrench,
+            },
+            {
+                title: 'Plan Limits',
+                href: '/master/ai/plan-limits',
+                icon: Gauge,
+            },
+            {
+                title: 'Usage & Metrics',
+                href: '/master/ai/usage',
+                icon: Gauge,
+            },
+            {
+                title: 'Fallback Rules',
+                href: '/master/ai/fallback-rules',
+                icon: GitBranch,
+            },
+            {
+                title: 'Policies',
+                href: '/master/ai/policies',
+                icon: ShieldAlert,
+            },
+            {
+                title: 'Providers',
+                href: '/master/ai/providers',
+                icon: Server,
             },
         ],
     },

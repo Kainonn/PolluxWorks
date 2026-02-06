@@ -2,8 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\AI\AiModel;
+use App\Models\AI\AiPlanLimit;
+use App\Models\AI\AiTool;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 
 /**
@@ -185,5 +190,37 @@ class Plan extends Model
         }
 
         return $this->max_storage_mb . ' MB';
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // AI Control Center Relationships
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Get the AI limits for this plan.
+     */
+    public function aiLimit(): HasOne
+    {
+        return $this->hasOne(AiPlanLimit::class);
+    }
+
+    /**
+     * Get the AI models allowed for this plan.
+     */
+    public function aiModels(): BelongsToMany
+    {
+        return $this->belongsToMany(AiModel::class, 'ai_plan_models')
+            ->withPivot(['max_requests_per_month', 'max_tokens_per_month', 'is_default'])
+            ->withTimestamps();
+    }
+
+    /**
+     * Get the AI tools allowed for this plan.
+     */
+    public function aiTools(): BelongsToMany
+    {
+        return $this->belongsToMany(AiTool::class, 'ai_plan_tools')
+            ->withPivot(['max_calls_per_day', 'max_calls_per_request'])
+            ->withTimestamps();
     }
 }

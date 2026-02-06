@@ -12,6 +12,13 @@ use App\Http\Controllers\Master\Billing\PaymentMethodController;
 use App\Http\Controllers\Master\Billing\PaymentController;
 use App\Http\Controllers\Master\Billing\InvoiceController;
 use App\Http\Controllers\Master\Billing\WebhookEventController;
+use App\Http\Controllers\Master\AI\AiModelController;
+use App\Http\Controllers\Master\AI\AiToolController;
+use App\Http\Controllers\Master\AI\AiPlanLimitController;
+use App\Http\Controllers\Master\AI\AiUsageController;
+use App\Http\Controllers\Master\AI\AiFallbackRuleController;
+use App\Http\Controllers\Master\AI\AiPolicyController;
+use App\Http\Controllers\Master\AI\AiProviderConfigController;
 use App\Http\Controllers\Api\HeartbeatController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -89,6 +96,42 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('audit-trail/export', [AuditEntryController::class, 'export'])->name('audit-trail.export');
         Route::get('audit-trail/entity-history', [AuditEntryController::class, 'entityHistory'])->name('audit-trail.entity-history');
         Route::get('audit-trail/{auditEntry}', [AuditEntryController::class, 'show'])->name('audit-trail.show');
+
+        // AI Control Center
+        Route::prefix('ai')->name('ai.')->group(function () {
+            // AI Models Management
+            Route::resource('models', AiModelController::class);
+
+            // AI Tools Registry
+            Route::post('tools/{tool}/toggle', [AiToolController::class, 'toggle'])->name('tools.toggle');
+            Route::resource('tools', AiToolController::class);
+
+            // AI Plan Limits
+            Route::resource('plan-limits', AiPlanLimitController::class)->parameters([
+                'plan-limits' => 'planLimit',
+            ]);
+
+            // AI Usage & Metrics
+            Route::get('usage', [AiUsageController::class, 'index'])->name('usage.index');
+            Route::get('usage/export', [AiUsageController::class, 'export'])->name('usage.export');
+            Route::get('usage/tenant/{tenant}', [AiUsageController::class, 'byTenant'])->name('usage.tenant');
+            Route::get('usage/model/{model}', [AiUsageController::class, 'byModel'])->name('usage.model');
+
+            // AI Fallback Rules
+            Route::post('fallback-rules/{fallbackRule}/toggle', [AiFallbackRuleController::class, 'toggle'])->name('fallback-rules.toggle');
+            Route::resource('fallback-rules', AiFallbackRuleController::class)->parameters([
+                'fallback-rules' => 'fallbackRule',
+            ]);
+
+            // AI Policies & Guardrails
+            Route::post('policies/{policy}/toggle', [AiPolicyController::class, 'toggle'])->name('policies.toggle');
+            Route::resource('policies', AiPolicyController::class);
+
+            // AI Provider Configs
+            Route::post('providers/{provider}/toggle', [AiProviderConfigController::class, 'toggle'])->name('providers.toggle');
+            Route::post('providers/{provider}/test', [AiProviderConfigController::class, 'test'])->name('providers.test');
+            Route::resource('providers', AiProviderConfigController::class);
+        });
     });
 });
 
